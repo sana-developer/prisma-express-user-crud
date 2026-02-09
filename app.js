@@ -2,6 +2,7 @@ const express = require('express');
 const dotenv = require('dotenv');
 
 const user_routes = require('./routes/users');
+const auth_routes = require('./routes/auth');
 
 dotenv.config();
 const app = express();
@@ -14,6 +15,7 @@ app.get('/', (req, res) => {
 });
 
 //routes
+app.use('/auth', auth_routes);
 app.use('/users', user_routes);
 
 app.listen(port, () => {

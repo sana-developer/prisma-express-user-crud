@@ -2,7 +2,11 @@ const db = require("../db.js");
 
 const getUsers = async (req, res) => {
   try {
-    const users = await db.user.findMany();
+    const users = await db.user.findMany({
+        where: {
+            deleted: false
+        }
+    });
 
     if (users.length === 0) {
       return res.status(404).json({ message: "No users found" });
@@ -22,6 +26,7 @@ const getUserById = async (req, res) => {
     const user = await db.user.findUnique({
       where: {
         id: Number(id),
+        deleted: false
       },
     });
 
@@ -35,30 +40,6 @@ const getUserById = async (req, res) => {
   }
 };
 
-const createUser = async (req, res) => {
-  try {
-    const { name, email, age } = req.body;
-
-    if (!name || !email) {
-      return res.status(400).json({ message: "Name and email are required" });
-    }
-
-    const user = await db.user.create({
-      data: {
-        name,
-        email,
-        age,
-      },
-    });
-
-    res.status(201).json({
-      message: "User created successfully",
-      user,
-    });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
 
 const updateUser = async (req, res) => {
   try {
@@ -68,6 +49,7 @@ const updateUser = async (req, res) => {
     const existingUser = await db.user.findUnique({
       where: {
         id: Number(id),
+        deleted: false
       },
     });
 
@@ -78,6 +60,7 @@ const updateUser = async (req, res) => {
     const updatedUser = await db.user.update({
       where: {
         id: Number(id),
+        deleted: false
       },
       data: {
         ...(name && { name }),
@@ -122,7 +105,6 @@ const deleteUser = async (req, res) => {
 module.exports = {
   getUsers,
   getUserById,
-  createUser,
   updateUser,
   deleteUser,
 };
